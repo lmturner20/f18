@@ -201,7 +201,6 @@ layer {
   top: "unit5_conv"
   
 }
-
 layer {
     name: "split"
     type: "Split"
@@ -226,9 +225,27 @@ layer {
   }
 }
 layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "final_pool"
+  bottom: "label"
+  top: "loss"
+}
+layer {
+  name: "reshape"
+  type: "Reshape"
+  bottom: "final_pool"
+  top: "reshape"
+  reshape_param {
+    shape {
+      dim: 50 dim: 9 dim: 128
+    }
+  }
+}
+layer {
   name: "pose_output"
   type: "InnerProduct"
-  bottom: "final_pool"
+  bottom: "reshape"
   top: "pose_output"
   inner_product_param {
     num_output: 2
@@ -236,13 +253,6 @@ layer {
       type: "xavier"
     }
   }
-}
-layer {
-  name: "loss"
-  type: "SoftmaxWithLoss"
-  bottom: "pose_output"
-  bottom: "label"
-  top: "loss"
 }
 layer {
   name: "labelout"
